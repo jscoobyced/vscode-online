@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  coder:
+    image: code-server-nodejs:latest
+    ports:
+      - 127.0.0.1:8080:8080
+      - 3000:3000
+    volumes:
+      - ${PWD}/.config:/home/coder/.config
+      - ${PWD}/project:/home/coder/project
+    environment:
+      - DOCKER_USER=${USER}
