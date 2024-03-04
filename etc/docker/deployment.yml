@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jsc-vscode-online
+  namespace: jsc-ns
+  labels:
+    app: jsc-vscode-online
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: jsc-vscode-online
+    tier: frontend
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jsc-vscode-online-pv-claim
+  namespace: jsc-ns
+  labels:
+    app: jsc-vscode-online
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jsc-vscode-online
+  namespace: jsc-ns
+  labels:
+    app: jsc-vscode-online
+spec:
+  selector:
+    matchLabels:
+      app: jsc-vscode-online
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      namespace: jsc-ns
+      labels:
+        app: jsc-vscode-online
+        tier: frontend
+    spec:
+      containers:
+      - image: jsc-vscode-online:latest
+        name: jsc-vscode-online
+        resources:
+          requests:
+            ephemeral-storage: "1Gi"
+            memory: "250Mi"
+          limits:
+            ephemeral-storage: "2Gi"
+            memory: "300Mi"
+        env:
+        - name: TZ
+          value: Asia/Bangkok
+        ports:
+        - containerPort: 8080
+          name: jsc-vscode-online
+        volumeMounts:
+        - name: jsc-vscode-online-persistent-storage
+          mountPath: /home/coder/workspaces
+      volumes:
+      - name: jsc-vscode-online-persistent-storage
+        persistentVolumeClaim:
+          claimName: jsc-vscode-online-pv-claim
