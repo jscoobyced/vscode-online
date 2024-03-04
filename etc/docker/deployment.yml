@@ -1,26 +1,26 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jsc-vscode-online
+  name: jsc-vsc-online
   namespace: jsc-ns
   labels:
-    app: jsc-vscode-online
+    app: jsc-vsc-online
 spec:
   type: ClusterIP
   ports:
     - port: 80
       targetPort: 8080
   selector:
-    app: jsc-vscode-online
+    app: jsc-vsc-online
     tier: frontend
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jsc-vscode-online-pv-claim
+  name: jsc-vsc-online-pv-claim
   namespace: jsc-ns
   labels:
-    app: jsc-vscode-online
+    app: jsc-vsc-online
 spec:
   accessModes:
     - ReadWriteOnce
@@ -31,14 +31,14 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jsc-vscode-online
+  name: jsc-vsc-online
   namespace: jsc-ns
   labels:
-    app: jsc-vscode-online
+    app: jsc-vsc-online
 spec:
   selector:
     matchLabels:
-      app: jsc-vscode-online
+      app: jsc-vsc-online
       tier: frontend
   strategy:
     type: Recreate
@@ -46,29 +46,29 @@ spec:
     metadata:
       namespace: jsc-ns
       labels:
-        app: jsc-vscode-online
+        app: jsc-vsc-online
         tier: frontend
     spec:
       containers:
-      - image: jsc-vscode-online:latest
-        name: jsc-vscode-online
+      - image: jscdroiddev/jsc-vscode-online:latest
+        name: jsc-vsc-online
         resources:
           requests:
             ephemeral-storage: "1Gi"
-            memory: "250Mi"
+            memory: "1Gi"
           limits:
             ephemeral-storage: "2Gi"
-            memory: "300Mi"
+            memory: "1Gi"
         env:
         - name: TZ
           value: Asia/Bangkok
         ports:
         - containerPort: 8080
-          name: jsc-vscode-online
+          name: jsc-vsc-online
         volumeMounts:
-        - name: jsc-vscode-online-persistent-storage
+        - name: jsc-vsc-online-persistent-storage
           mountPath: /home/coder/workspaces
       volumes:
-      - name: jsc-vscode-online-persistent-storage
+      - name: jsc-vsc-online-persistent-storage
         persistentVolumeClaim:
-          claimName: jsc-vscode-online-pv-claim
+          claimName: jsc-vsc-online-pv-claim
